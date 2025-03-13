@@ -1,14 +1,14 @@
 #include "tokenizer.h"
 
 Tokenizer::Tokenizer() {
-    this->key.assign("[if|else\s+if|else|for|while|do\s+while]");
+    this->key.assign(R"(\b(if|else|for|while)\b)");
     this->id.assign("[_a-zA-Z][_a-zA-Z0-9]{0,30}");
-    this->op.assign("[\+|\-|\*|\/|\(|\)]");
+    this->op.assign("[\-|\+|\*|\/|\(|\)]");
     this->constant.assign("[0-9]+");
 }
 
 //Function matches syntax defined below to create Abstract Syntax Tree (AST)
-//Keywords: [if], [else if], [else], [for], [while], [do while]
+//Keywords: [if], [else], [for], [while]
 //Identifiers: [a-zA-Z_]+
 //Operators: [+], [-], [*], [/], [(], [)]
 //Constants: [0-9]+
@@ -19,7 +19,7 @@ void Tokenizer::parseLine(std::string line) {
     int i = 0;
     std::string tokenVal = "";
     Token token;
-
+    
     while (i < line.size()) {
         tokenVal.push_back(line.at(i));
 
@@ -27,19 +27,21 @@ void Tokenizer::parseLine(std::string line) {
         if (tokenVal == " ") {
             tokenVal = "";
         }
-        //String matches keyword exactly, push token
-        else if (std::regex_match(tokenVal, this->key)) {
-            token = Token(Token::TokenType::KEY, tokenVal);
-            this->tokenList.push(token);
-            tokenVal = "";
-        }
         //String matches identifier, continue iteration while matching
+        //This logic block also checks if string matches keyword at various points, 
         else if (std::regex_match(tokenVal, this->id)) {
             while (std::regex_match(tokenVal, this->id)) {
                 ++i;
 
                 //String matched but index out of bounds, push token
                 if (i >= line.size()) {
+                    //String matches keyword exactly, push token
+                    if (std::regex_match(tokenVal, this->key)) {
+                        token = Token(Token::TokenType::KEY, tokenVal);
+                        this->tokenList.push(token);
+                        tokenVal = "";
+                        continue;
+                    }
                     token = Token(Token::TokenType::ID, tokenVal);
                     this->tokenList.push(token);
                     tokenVal = "";
@@ -58,10 +60,18 @@ void Tokenizer::parseLine(std::string line) {
                 --i;
                 tokenVal.pop_back();
             }
+            //String matches keyword exactly, push token
+            if (std::regex_match(tokenVal, this->key)) {
+                token = Token(Token::TokenType::KEY, tokenVal);
+                this->tokenList.push(token);
+                tokenVal = "";
+            }
             //Create token and push
-            token = Token(Token::TokenType::ID, tokenVal);
-            this->tokenList.push(token);
-            tokenVal = "";
+            else {
+                token = Token(Token::TokenType::ID, tokenVal);
+                this->tokenList.push(token);
+                tokenVal = "";
+            }
         }
         //String matches operator, push token
         else if (std::regex_match(tokenVal, this->op)) {
