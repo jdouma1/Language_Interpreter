@@ -4,20 +4,19 @@
 #include "tokenizer.h"
 
 int main() {
-    //std::cout << "Hello World!" << std::endl;
-    //Token t = Token(Token::tokenType::OP, "+");
-    //std::cout << "My token:\n" << t << std::endl;
+    std::string text;
+    std::cout << "Welcome! Press \'exit\' to exit" << std::endl;
 
-    Tokenizer t = Tokenizer();
-    std::string line;
-    std::cout << "Welcome! Press \'e\' to exit" << std::endl;
     while (true) {
-        std::getline(std::cin, line);
-        if (line == "e") {
-            std::cout << "Goodbye" << std::endl;
+        std::getline(std::cin, text);
+        if (text == "exit") {
+            std::cout << "Goodbye..." << std::endl;
             break;
         }
-        else { t.parseLine(line); }
+        else {
+            Tokenizer t = Tokenizer(text);
+            t.createTokens();
+        }
     }
 
     return 0;

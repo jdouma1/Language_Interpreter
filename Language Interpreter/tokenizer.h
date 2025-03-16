@@ -1,16 +1,19 @@
 #include "token.h"
-#include <regex>
-#include <stack>
+#include "illegalCharError.h"
+#include <vector>
+#include <cctype>
 #pragma once
 
 class Tokenizer {
 public:
-    Tokenizer();
-    void parseLine(std::string line);
+    Tokenizer(std::string text);
+    void advance();
+    Token createNumber();
+    void createTokens();
+    std::vector<Token> getTokens() { return tokenList; }
 private:
-    std::stack<Token> tokenList;
-    std::regex key;
-    std::regex id;
-    std::regex op;
-    std::regex constant;
+    std::string text;
+    int pos;
+    std::string currStr;
+    std::vector<Token> tokenList;
 };
