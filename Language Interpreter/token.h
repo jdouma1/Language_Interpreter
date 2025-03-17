@@ -1,3 +1,5 @@
+//token.h : This file contains methods which create and return language token members
+
 #include <iostream>
 #pragma once
 
@@ -22,6 +24,7 @@ public:
     std::string getTokenValue() {
         return value;
     }
+    //Returns string representation of Token object
     std::string toString() {
         return(getTokenTypeToString() + ": " + value);
     }

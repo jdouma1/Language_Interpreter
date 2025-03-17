@@ -1,13 +1,15 @@
+// error.h : This file contains methods which create and return the program's logical error messages
+
 #include <string>
 #pragma once
 class Error {
 public:
-	Error(std::string errorName = "Undefined", std::string details = "Undefined") {
+	Error(std::string errorName = "Undefined error", std::string details = "Undefined error details") {
 		this->errorName = errorName;
 		this->details = details;
 	}
 	std::string toString() {
-		return(errorName + ": " + details);
+		return("ERROR: " + errorName + ": " + details);
 	}
 private:
 	std::string errorName;

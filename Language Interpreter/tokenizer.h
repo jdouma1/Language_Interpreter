@@ -1,3 +1,5 @@
+// tokenizer.h : This file contains methods which advance through input to create language tokens
+
 #include "token.h"
 #include "illegalCharError.h"
 #include <vector>

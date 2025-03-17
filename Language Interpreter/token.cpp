@@ -1,5 +1,6 @@
 #include "token.h"
 
+//Method which evaluates the "tokenType" member enum value to return a string representation for evaluation and printing
 std::string Token::getTokenTypeToString() {
     switch (tokenType) {
     case TokenType::PLUS:
