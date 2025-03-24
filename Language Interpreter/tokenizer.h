@@ -1,7 +1,7 @@
 /* tokenizer.h : This file contains:
  * The Tokenizer class which contains methods that advance through input to create language tokens.
- * The Position class which keeps track of line and column numbers for tracking error locations.
- * Error base class and IllegalCharError subclass for generating syntax errors.
+ * The Position class which keeps track of line and column numbers for tracking position in text input and error locations.
+ * Error base class and IllegalCharError subclass for generating errors and details.
  */
 
 #include "token.h"
@@ -12,7 +12,6 @@
 // Position class used to keep track of line and column numbers to pinpoint error location from files
 class Position {
 public:
-    // Intitializes Position class with the current index, line number, and column number
     Position(int index = -1, int line = 0, int col = -1) {
         this->index = index;
         this->line = line;
@@ -39,14 +38,17 @@ public:
         this->details = details;
     }
     std::string toString() {
+        // Convert start and end position lines and columns to string representation
         std::string lineStart = std::to_string(posStart.getLine());
         std::string colStart = std::to_string(posStart.getCol());
         std::string lineEnd = std::to_string(posEnd.getLine());
         std::string colEnd = std::to_string(posEnd.getCol());
 
+        // Format start and end position lines and columns
         std::string start = "Start: [Line:" + lineStart + ", Column:" + colStart + "]\n";
         std::string end = "End: [Line:" + lineEnd + ", Column:" + colEnd + "]\n";
 
+        // Return formatted error message
         return(start + end + "ERROR: " + errorName + "\nDETAILS: " + details + "\n");
     }
 private:

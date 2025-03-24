@@ -32,8 +32,8 @@ void Position::advance(char currChar) {
 
 /*
  * Constructor which initializes the members:
- *     - "text" to line read in "Language Interpreter.cpp", 
- *     - "pos" to store current position in input
+ *     - "text" to input read in "Language Interpreter.cpp", 
+ *     - "pos" to store current Position in input
  *     - "currChar" to store current character being read from input
  * and calls "advance()" to increment "pos" and "currStr" to first values in the "text"
  */ 
@@ -138,6 +138,7 @@ void Tokenizer::createTokens() {
             advance();
             Position end = pos.getPositionCopy();
             IllegalCharError e = IllegalCharError(start, end, str);
+
             std::cout << e.toString() << std::endl;
             return;
         }
