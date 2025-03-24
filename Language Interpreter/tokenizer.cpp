@@ -1,29 +1,58 @@
 #include "tokenizer.h"
 
 /*
+ * ****************************** 
+ * BEGINNING OF POSITION CLASS
+ * ****************************** 
+ */
+
+ // Advances the current position in the text.
+ // Checks whether the current character is a newline and increments line and column position accordingly
+void Position::advance(char currChar) {
+    index += 1;
+    col += 1;
+
+    if (currChar == '\n') {
+        line += 1;
+        col = 0;
+    }
+}
+
+/*
+ * ****************************** 
+ * END OF POSITION CLASS
+ * ****************************** 
+ */
+
+/*
+ * ****************************** 
+ * BEGINNING OF TOKENIZER CLASS
+ * ****************************** 
+ */
+
+/*
  * Constructor which initializes the members:
  *     - "text" to line read in "Language Interpreter.cpp", 
  *     - "pos" to store current position in input
- *     - "currStr" to store current character being read from input (is type:string and not type:char due to token values being various lengths)
+ *     - "currChar" to store current character being read from input
  * and calls "advance()" to increment "pos" and "currStr" to first values in the "text"
  */ 
 Tokenizer::Tokenizer(std::string text) {
     this->text = text;
-    pos = -1;
-    currStr = "";
+    pos = Position(-1, 0, -1);
+    currChar = '\0';
     advance();
 }
 
-// Increments the current position in the text and updates the "currStr" to current character being read
+// Increments the current position in the text and updates the "currChar" to current character being read
 void Tokenizer::advance() {
-    pos += 1;
+    pos.advance(currChar);
 
-    if (pos < text.size()) {
-        currStr = "";
-        currStr += text.at(pos);
+    if (pos.getIndex() < text.size()) {
+        currChar = text.at(pos.getIndex());
     }
     else {
-        currStr = "";
+        currChar = '\0';
     }
 }
 
@@ -33,61 +62,69 @@ Token Tokenizer::createNumber() {
     int dotCount = 0;
 
     // While the input is not empty (reached the end), and is a digit or decimal point
-    while (currStr != "" && (std::isdigit(currStr.at(0)) || currStr == ".")) {
-        if (currStr == ".") {
+    while (currChar != '\0' && (std::isdigit(currChar) || currChar == '.')) {
+        if (currChar == '.') {
             // If one decimal point has already been used, the number is no longer a valid float representation, return an error token
             if (dotCount == 1) {
-                numStr += currStr;
+                numStr += currChar;
                 return(Token(Token::TokenType::ERR, numStr));
             }
             dotCount += 1;
         }
-        numStr += currStr;
+        numStr += currChar;
         advance();
     }
     if (dotCount == 0) {
         return(Token(Token::TokenType::INT, numStr));
     }
+    // Floating point number without digits following decimal point.
+    // Ex) "0." or "1."
+    if (numStr.back() == '.') {
+        return(Token(Token::TokenType::ERR, numStr));
+    }
     return(Token(Token::TokenType::FLOAT, numStr));
 }
 
-// Advances through the "text" to compare the input against the language grammar and syntax and create a list of tokens
+// Advances through the "text" to compare the input against the language grammar and syntax and create a list of tokens.
+// Prints error message and returns if a syntax error is encountered, otherwise continues to create a list of tokens
 void Tokenizer::createTokens() {
-    while (currStr != "") {
+    while (currChar != '\0') {
         // Ignore whitespace
-        if (std::isspace(currStr.at(0))) {
+        if (std::isspace(currChar)) {
             advance();
         }
-        else if (currStr == "+") {
-            tokenList.push_back(Token(Token::TokenType::PLUS, currStr));
+        else if (currChar == '+') {
+            tokenList.push_back(Token(Token::TokenType::PLUS, "+"));
             advance();
         }
-        else if (currStr == "-") {
-            tokenList.push_back(Token(Token::TokenType::MINUS, currStr));
+        else if (currChar == '-') {
+            tokenList.push_back(Token(Token::TokenType::MINUS, "-"));
             advance();
         }
-        else if (currStr == "*") {
-            tokenList.push_back(Token(Token::TokenType::MUL, currStr));
+        else if (currChar == '*') {
+            tokenList.push_back(Token(Token::TokenType::MUL, "*"));
             advance();
         }
-        else if (currStr == "/") {
-            tokenList.push_back(Token(Token::TokenType::DIV, currStr));
+        else if (currChar == '/') {
+            tokenList.push_back(Token(Token::TokenType::DIV, "/"));
             advance();
         }
-        else if (currStr == "(") {
-            tokenList.push_back(Token(Token::TokenType::LPAREN, currStr));
+        else if (currChar == '(') {
+            tokenList.push_back(Token(Token::TokenType::LPAREN, "("));
             advance();
         }
-        else if (currStr == ")") {
-            tokenList.push_back(Token(Token::TokenType::RPAREN, currStr));
+        else if (currChar == ')') {
+            tokenList.push_back(Token(Token::TokenType::RPAREN, ")"));
             advance();
         }
-        else if (std::isdigit(currStr.at(0))) {
+        else if (std::isdigit(currChar)) {
+            Position start = pos.getPositionCopy();
             tokenList.push_back(createNumber());
 
             // If an invalid number was provided, "tokenType" must be "ERR". Print an error message and return from reading input
             if (tokenList.back().getTokenTypeToString() == "ERR") {
-                Error e = Error("Invalid Float", tokenList.back().getTokenValue());
+                Position end = pos.getPositionCopy();
+                Error e = Error(start, end, "Invalid Float", tokenList.back().getTokenValue());
                 std::cout << e.toString() << std::endl;
                 return;
             }
@@ -95,15 +132,30 @@ void Tokenizer::createTokens() {
         }
         // Character is not recognized in the language syntax. Print an error message and return from reading input
         else {
-            std::string str = ("\"" + currStr + "\"");
+            Position start = pos.getPositionCopy();
+            std::string str = "";
+            str += currChar;
             advance();
-            IllegalCharError e = IllegalCharError(str);
+            Position end = pos.getPositionCopy();
+            IllegalCharError e = IllegalCharError(start, end, str);
             std::cout << e.toString() << std::endl;
             return;
         }
     }
     // After reaching the end of the input, print the list of tokens
-    for (Token t : tokenList) {
-        std::cout << t.toString() << std::endl;
-    }
+    printTokens();
 }
+
+// Prints a formatted list of tokens
+void Tokenizer::printTokens() {
+    std::cout << "[";
+    for (int i = 0; i < tokenList.size() - 1; ++i) {
+        std::cout << tokenList.at(i).toString() << ", ";
+    }
+    std::cout << tokenList.at(tokenList.size() - 1).toString() << "]" << std::endl;
+}
+/*
+ * ****************************** 
+ * END OF TOKENIZER CLASS
+ * ****************************** 
+ */

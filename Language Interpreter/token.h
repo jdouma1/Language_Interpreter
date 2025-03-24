@@ -1,6 +1,7 @@
 //token.h : This file contains methods which create and return language token members
 
 #include <iostream>
+#include <string>
 #pragma once
 
 class Token {
@@ -16,9 +17,9 @@ public:
         FLOAT,
         ERR
     };
-    Token(TokenType tokenType = TokenType::ERR, std::string token = "") {
+    Token(TokenType tokenType = TokenType::ERR, std::string value = "") {
         this->tokenType = tokenType;
-        this->value = token;
+        this->value = value;
     }
     std::string getTokenTypeToString();
     std::string getTokenValue() {
@@ -26,7 +27,7 @@ public:
     }
     //Returns string representation of Token object
     std::string toString() {
-        return(getTokenTypeToString() + ": " + value);
+        return(getTokenTypeToString() + ":" + value);
     }
 private:
     TokenType tokenType;
