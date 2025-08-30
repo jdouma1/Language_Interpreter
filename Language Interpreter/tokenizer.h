@@ -4,7 +4,7 @@
  * Error base class and IllegalCharError subclass for generating errors and details.
  */
 
-#include "token.h"
+#include "Token.h"
 #include <vector>
 #include <cctype>
 #pragma once

@@ -128,12 +128,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Language Interpreter.cpp" />
-    <ClCompile Include="token.cpp" />
-    <ClCompile Include="tokenizer.cpp" />
+    <ClCompile Include="Parser.cpp" />
+    <ClCompile Include="Token.cpp" />
+    <ClCompile Include="Tokenizer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="token.h" />
-    <ClInclude Include="tokenizer.h" />
+    <ClInclude Include="Parser.h" />
+    <ClInclude Include="Token.h" />
+    <ClInclude Include="Tokenizer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
