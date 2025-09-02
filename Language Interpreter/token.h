@@ -22,13 +22,9 @@ public:
         this->value = value;
     }
     std::string getTokenTypeToString();
-    std::string getTokenValue() {
-        return value;
-    }
+    std::string getTokenValue() { return value; }
     //Returns string representation of Token object
-    std::string toString() {
-        return(getTokenTypeToString() + ":" + value);
-    }
+    std::string toString() { return(getTokenTypeToString() + ":" + value); }
 private:
     TokenType tokenType;
     std::string value;

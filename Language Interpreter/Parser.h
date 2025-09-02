@@ -2,9 +2,9 @@
  * This file contains classes and methods which parse tokens and structure them to grammatical hierarchy.
  * This includes Node structures for numbers and Binary Operator Nodes to form an Abstract Syntax Tree.
  * GRAMMAR:
- * expression: (term (PLUS|MINUS) term)
- * term: (factor (MUL|DIV) factor)
- * factor: (INT|FLOAT)
+ * expression: (term (PLUS|MINUS) term) --> term BiOpNode term
+ * term: (factor (MUL|DIV) factor) --> factor BiOpNode factor
+ * factor: (INT|FLOAT) --> NumNode
  */
 
 
@@ -15,12 +15,22 @@
 // NumNode class used to create AST nodes for numbers
 class NumNode {
 public:
-	NumNode(int token = -1) { this->intToken = token; isInt = true; }
-	NumNode(float token = -1) { this->floatToken = token; isFloat = true; }
-	std::string toString() { if (isInt) return std::to_string(intToken); return std::to_string(floatToken); }
+	NumNode(Token token = Token()) {
+		this->token = token;
+		if (token.getTokenTypeToString() == "INT") {
+			isInt = true;
+			intData = std::stoi(token.getTokenValue());
+		}
+		else {
+			isFloat = true;
+			floatData = std::stof(token.getTokenValue());
+		}
+	}
+	std::string toString() { return token.toString(); }
 private:
-	int intToken;
-	float floatToken;
+	Token token;
+	int intData;
+	float floatData;
 	bool isInt = false;
 	bool isFloat = false;
 };
@@ -28,7 +38,7 @@ private:
 // BiOpNode class used to create AST nodes for Binary Operators (+|-|*|/)
 class BiOpNode {
 public:
-	BiOpNode(NumNode leftNode = NumNode(-1), NumNode rightNode = NumNode(-1), Token opToken = Token(Token::TokenType::ERR, "?")) {
+	BiOpNode(NumNode leftNode = NumNode(), NumNode rightNode = NumNode(), Token opToken = Token()) {
 		this->leftNode = leftNode;
 		this->rightNode = rightNode;
 		this->opToken = opToken;
@@ -43,6 +53,27 @@ private:
 // Parser class used to analyze token input and generate an Abstract Syntax Tree for interpretation
 class Parser {
 public:
+	Parser(std::vector<Token> tokenList) { this->tokenList = tokenList;  size = tokenList.size(); advance(); }
+	// Generates an AST representation after parsing list of tokens
+	void parseTokens() {
+		// TODO
+	}
+	// Generates the next token in list
+	void advance() {
+		tokenIndex++;
+		if (tokenIndex < size) currToken = tokenList[tokenIndex];
+		else {
+			currToken = Token();
+			tokenIndex = -1;
+		}
+	}
+	NumNode factor() {
+		// TODO
+	}
 private:
+	std::vector<Token> tokenList;
+	int size;
+	int tokenIndex = -1;
+	Token currToken;
 };
 

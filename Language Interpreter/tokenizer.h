@@ -62,9 +62,7 @@ private:
 class IllegalCharError : Error {
 public:
     IllegalCharError(Position start = Position(-1, 0, -1), Position end = Position(-1, 0, -1), std::string details = "Undefined illegal character details") : Error(start, end, "Illegal Character", details) {}
-    std::string toString() {
-        return(Error::toString());
-    }
+    std::string toString() { return(Error::toString()); }
 private:
 };
 
