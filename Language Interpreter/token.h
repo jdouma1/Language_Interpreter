@@ -1,4 +1,4 @@
-//token.h : This file contains methods which create and return language token members
+//Token.h : This file contains methods which create and return language token members
 
 #include <iostream>
 #include <string>
@@ -17,13 +17,14 @@ public:
         FLOAT,
         ERR
     };
-    Token(TokenType tokenType = TokenType::ERR, std::string value = "") {
+    Token(TokenType tokenType = TokenType::ERR, std::string value = "-1") {
         this->tokenType = tokenType;
         this->value = value;
     }
+    // Returns a string representation of the token type
     std::string getTokenTypeToString();
     std::string getTokenValue() { return value; }
-    //Returns string representation of Token object
+    // Prints the token type and the value held
     std::string toString() { return(getTokenTypeToString() + ":" + value); }
 private:
     TokenType tokenType;

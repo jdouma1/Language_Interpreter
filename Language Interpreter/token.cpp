@@ -8,15 +8,15 @@ std::string Token::getTokenTypeToString() {
     case TokenType::MINUS:
         return("MINUS");
     case TokenType::MUL:
-        return("MULTIPLY");
+        return("MUL");
     case TokenType::DIV:
-        return("DIVIDE");
+        return("DIV");
     case TokenType::LPAREN:
         return("LPAREN");
     case TokenType::RPAREN:
         return("RPAREN");
     case TokenType::INT:
-        return("INTEGER");
+        return("INT");
     case TokenType::FLOAT:
         return("FLOAT");
     case TokenType::ERR:

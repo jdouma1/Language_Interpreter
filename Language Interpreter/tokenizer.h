@@ -1,4 +1,4 @@
-/* tokenizer.h : This file contains:
+/* Tokenizer.h : This file contains:
  * The Tokenizer class which contains methods that advance through input to create language tokens.
  * The Position class which keeps track of line and column numbers for tracking position in text input and error locations.
  * Error base class and IllegalCharError subclass for generating errors and details.
@@ -9,7 +9,7 @@
 #include <cctype>
 #pragma once
 
-// Position class used to keep track of line and column numbers to pinpoint error location from files
+// Position class used to keep track of the line and column numbers to pinpoint error location from files
 class Position {
 public:
     Position(int index = -1, int line = 0, int col = -1) {
@@ -17,7 +17,15 @@ public:
         this->line = line;
         this->col = col;
     }
-    void advance(char currChar);
+    void advance(char currChar) {
+        index += 1;
+        col += 1;
+
+        if (currChar == '\n') {
+            line += 1;
+            col = 0;
+        }
+    }
     int getIndex() { return index; }
     int getLine() { return line; }
     int getCol() { return col; }
@@ -28,7 +36,7 @@ private:
     int col;
 };
 
-// This file contains methods which create and return the program's logical error messages
+// Error class used to create and return the program's logical error messages
 class Error {
 public:
     Error(Position start = Position(-1, 0, -1), Position end = Position(-1, 0, -1), std::string errorName = "None", std::string details = "N/A") {
@@ -58,7 +66,7 @@ private:
     std::string details;
 };
 
-// This class subclasses the Error class to create specific error messages regarding illegal character usage
+// IllegalCharError class subclasses the Error class to create specific error messages regarding illegal character usage
 class IllegalCharError : Error {
 public:
     IllegalCharError(Position start = Position(-1, 0, -1), Position end = Position(-1, 0, -1), std::string details = "Undefined illegal character details") : Error(start, end, "Illegal Character", details) {}

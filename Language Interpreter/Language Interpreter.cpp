@@ -15,6 +15,12 @@ int main() {
         else {
             Tokenizer t = Tokenizer(text);
             t.createTokens();
+            Parser p = Parser(t.getTokens());
+            Node *ast = p.parseTokens();
+            std::cout << ast->toString() << std::endl;
+            //ast->deleteNodes(ast);
+            delete ast;
+            ast = nullptr;
         }
     }
 
