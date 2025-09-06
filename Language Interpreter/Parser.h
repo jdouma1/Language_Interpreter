@@ -44,28 +44,25 @@ public:
 		deleteNodes(node->rightNode);
 		delete node;
 	}
-	std::string toString() {
-		if (leftNode == nullptr && rightNode == nullptr) return token.toString();
-		//else if (leftNode == nullptr && rightNode != nullptr) return token.toString() + rightNode->toString();
-		//else if (leftNode != nullptr && rightNode == nullptr) return leftNode->toString() + token.toString();
-		return '(' + leftNode->toString() + ' ' + token.toString() + ' ' + rightNode->toString() + ')';
-	}
+	void recursivePrintNodes(Node *node) {
+		if (node == nullptr) {
+			return;
+		}
+		recursivePrintNodes(node->leftNode);
+		std::cout << token.toString() << " ";
 
-	Node *leftNode;
-	Token token;
-	Node *rightNode;
+		recursivePrintNodes(node->rightNode);
+	}
 private:
+	Node* leftNode;
+	Token token;
+	Node* rightNode;
 };
 
 // Parser class used to analyze token input and generate an Abstract Syntax Tree for interpretation
 class Parser {
 public:
-	Parser(std::vector<Token> tokenList) { this->tokenList = tokenList;  size = tokenList.size(); advance(); }
-
-	// Generates an AST representation after parsing list of tokens
-	Node *parseTokens() {
-		return new Node(expr());
-	}
+	Parser(std::vector<Token> tokenList = {}) { this->tokenList = tokenList;  size = tokenList.size(); advance(); }
 
 	// Generates the next token in list
 	bool advance() {
@@ -77,37 +74,50 @@ public:
 		else return false;
 	}
 
-	// Generates a factor (INT|FLOAT)
-	Node *factor() {
-		Token t = currToken;
-		std::string tokenType = t.getTokenTypeToString();
-		if (tokenType == "INT" || tokenType == "FLOAT") {
-			advance();
-			Node* node = new Node(t);
-			return node;
-		}
-		Node* node = new Node(Token());
-		return node;
+	// Generates an AST representation after parsing list of tokens
+	Node *parseTokens() {
+		return expr();
 	}
-	// Generates a term FACTOR ((MUL|DIV) FACTOR)*
-	Node *term() {
-		Node *node = biOp(factor(), std::vector<std::string>{"MUL", "DIV"});
-		return node;
-	}
-	// Generates an expression TERM ((PLUS|MINUS) TERM)*
-	Node *expr() {
-		Node* node = biOp(term(), std::vector<std::string>{"PLUS", "MINUS"});
-		return node;
-	}
-	Node *biOp(Node *node, std::vector<std::string> ops) {
-		Node *left = node;
 
-		while (std::find(ops.begin(), ops.end(), currToken.getTokenTypeToString()) != ops.end()) {
+	// Generates an expression TERM ((PLUS|MINUS) TERM)*
+	Node* expr() {
+		Node* left = term();
+		std::string tokenType = currToken.getTokenTypeToString();
+
+		while (tokenType == "PLUS" || tokenType == "MINUS") {
 			Token opToken = currToken;
-			if (advance()) Node* right = node;
-			left = new Node(left, opToken, nullptr);
+			advance();
+			Node* right = term();
+			left = new Node(left, opToken, right);
+			tokenType = currToken.getTokenTypeToString();
 		}
 		return left;
+	}
+
+	// Generates a term FACTOR ((MUL|DIV) FACTOR)*
+	Node *term() {
+		Node* left = factor();
+		std::string tokenType = currToken.getTokenTypeToString();
+
+		while (tokenType == "MUL" || tokenType == "DIV") {
+			Token opToken = currToken;
+			advance();
+			Node* right = factor();
+			left = new Node(left, opToken, right);
+			tokenType = currToken.getTokenTypeToString();
+		}
+		return left;
+	}
+
+	// Generates a factor (INT|FLOAT)
+	Node* factor() {
+		Token t = currToken;
+		std::string tokenType = currToken.getTokenTypeToString();
+		if (tokenType == "INT" || tokenType == "FLOAT") {
+			advance();
+			return new Node(t);
+		}
+		return new Node(Token());
 	}
 private:
 	std::vector<Token> tokenList;

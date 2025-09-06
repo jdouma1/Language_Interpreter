@@ -142,7 +142,7 @@ void Tokenizer::printTokens() {
     for (int i = 0; i < tokenList.size() - 1; ++i) {
         std::cout << tokenList.at(i).toString() << ", ";
     }
-    std::cout << tokenList.at(tokenList.size() - 1).toString() << "]" << std::endl << std::endl;
+    std::cout << tokenList.at(tokenList.size() - 1).toString() << "]" << std::endl;
 }
 /*
  * ****************************** 

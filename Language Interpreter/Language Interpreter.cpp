@@ -2,9 +2,20 @@
 
 #include "Parser.h"
 
+bool isOnlyWhitespace(std::string text) {
+    if (text.empty()) return true;
+    for (char c : text) {
+        if (!std::isspace(c)) return false;
+    }
+    return true;
+}
+
 int main() {
     std::string text;
     std::cout << "Welcome! Enter \'\\e\' to exit" << std::endl;
+    Tokenizer t = Tokenizer();
+    Parser p = Parser();
+    Node* ast = nullptr;
 
     while (true) {
         std::getline(std::cin, text);
@@ -12,17 +23,22 @@ int main() {
             std::cout << "Goodbye..." << std::endl;
             break;
         }
-        else {
-            Tokenizer t = Tokenizer(text);
+        else if (!isOnlyWhitespace(text)) {
+            t = Tokenizer(text);
             t.createTokens();
-            Parser p = Parser(t.getTokens());
-            Node *ast = p.parseTokens();
-            std::cout << ast->toString() << std::endl;
+            p = Parser(t.getTokens());
+            ast = p.parseTokens();
+            std::cout << "Printing AST: ";
+            ast->recursivePrintNodes(ast);
+            std::cout << std::endl;
             //ast->deleteNodes(ast);
-            delete ast;
-            ast = nullptr;
+        }
+        else {
+            std::cout << "Please enter input that is not plain whitespace nor empty" << std::endl;
         }
     }
+    delete ast;
+    ast = nullptr;
 
     return 0;
 }

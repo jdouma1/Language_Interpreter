@@ -77,7 +77,7 @@ private:
 // Tokenizer class used to advance through input and create tokens
 class Tokenizer {
 public:
-    Tokenizer(std::string text);
+    Tokenizer(std::string text = "");
     void advance();
     Token createNumber();
     void createTokens();
