@@ -53,10 +53,10 @@ public:
 
 		recursivePrintNodes(node->rightNode);
 	}
-private:
 	Node* leftNode;
 	Token token;
 	Node* rightNode;
+private:
 };
 
 // Parser class used to analyze token input and generate an Abstract Syntax Tree for interpretation
@@ -84,6 +84,7 @@ public:
 		Node* left = term();
 		std::string tokenType = currToken.getTokenTypeToString();
 
+		Node* node = nullptr;
 		while (tokenType == "PLUS" || tokenType == "MINUS") {
 			Token opToken = currToken;
 			advance();
@@ -99,11 +100,12 @@ public:
 		Node* left = factor();
 		std::string tokenType = currToken.getTokenTypeToString();
 
+		Node *node = nullptr;
 		while (tokenType == "MUL" || tokenType == "DIV") {
 			Token opToken = currToken;
 			advance();
 			Node* right = factor();
-			left = new Node(left, opToken, right);
+			node = new Node(left, opToken, right);
 			tokenType = currToken.getTokenTypeToString();
 		}
 		return left;
@@ -115,7 +117,16 @@ public:
 		std::string tokenType = currToken.getTokenTypeToString();
 		if (tokenType == "INT" || tokenType == "FLOAT") {
 			advance();
+			std::cout << "CREATED FACTOR: " << t.toString() << std::endl;
 			return new Node(t);
+		}
+		else if (tokenType != "ERR") {
+			std::cout << "IMPROPER SYNTAX. CHARACTER NOT RECOGNIZED" << std::endl;
+			syntaxError = true;
+		}
+		else {
+			std::cout << "IMPROPER GRAMMAR. MUST HAVE [INT|FLOAT (OPERATOR) INT|FLOAT]";
+			grammarError = true;
 		}
 		return new Node(Token());
 	}
@@ -124,5 +135,7 @@ private:
 	int size;
 	int tokenIndex = -1;
 	Token currToken;
+	bool syntaxError = false;
+	bool grammarError = false;
 };
 
